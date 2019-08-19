@@ -10,8 +10,8 @@ class SpecAn(object):
 
     def FEP_Setup(self, freq):
         self.conn.execute('''update FEP set content = ? where parameter = ? ''',
-                         (freq, Centre_frequency)
-                         )
+                         (freq, 'Centre_frequency')
+                         )# update freqency according to user input
         self.conn.commit()
 
         list = [row[0] for row in self.conn.execute("select content from FEP")]
@@ -22,19 +22,27 @@ class SpecAn(object):
         self.SP.write(f"FREQ:SPAN {list[1]}Hz")
         self.SP.write(f"BAND {list[2]}Hz")
         self.SP.write(f"BAND:VID {list[3]}Hz")
-        self.SP.write(f"DISP:TRAC:Y:RLEV:OFFS {list[4]}")
-        self.SP.write(f"DISP:TRAC:Y:RLEV {list[5]}")
-        self.SP.write(f"INP:ATT {list[6]}")
+        self.SP.write(f"DISP:TRAC:Y:RLEV:OFFS {list[6]}")# keep sequence of line25/26/27
+        self.SP.write(f"DISP:TRAC:Y:RLEV {list[4]}")
+        self.SP.write(f"INP:ATT {list[5]}")
+        self.SP.write(f"{list[6]}")# FSV requires a addtional line of code
         self.SP.write(f"{list[7]}")
-        self.SP.write(f"{list[8]}")
-        self.SP.write(f"CORR:TRAN:SEL '{list[9]}'")
-        self.SP.write(f"CORR:TRAN {list[10]} ")
-        self.SP.write(f"CORR:TRAN:SEL '{list[11]}'")
-        self.SP.write(f"CORR:TRAN {list[12]}")
-        self.SP.write(f"CORR:TRAN:SEL '{list[13]}'")
-        self.SP.write(f"CORR:TRAN {list[14]}")
-        self.SP.write(f"CALC:LIM:NAME '{list[15]}'")
-        self.SP.write(f"CALC:LIM:UPP:STAT {list[16]}")
-        self.SP.write(f"CALC:LIM:NAME '{list[17]}'")
-        self.SP.write(f"CALC:LIM:UPP:STAT {list[18]}")
-        self.SP.write(f"SWE:POIN {list[19]}")
+        self.SP.write(f"CORR:TRAN:SEL '{list[8]}'")
+        self.SP.write(f"CORR:TRAN {list[9]} ")
+        self.SP.write(f"CORR:TRAN:SEL '{list[10]}'")
+        self.SP.write(f"CORR:TRAN {list[11]}")
+        self.SP.write(f"CORR:TRAN:SEL '{list[12]}'")
+        self.SP.write(f"CORR:TRAN {list[13]}")
+        self.SP.write(f"CALC:LIM:NAME '{list[14]}'")
+        self.SP.write(f"CALC:LIM:UPP:STAT {list[15]}")
+        self.SP.write(f"CALC:LIM:NAME '{list[16]}'")
+        self.SP.write(f"CALC:LIM:UPP:STAT {list[17]}")
+        self.SP.write(f"SWE:POIN {list[18]}")
+
+try:
+    FSV = SpecAn('TCPIP0::10.0.24.149::inst0::INSTR', 'SpecAn.db')
+except BaseException:
+    print("FSV is not on.")
+    pass
+
+FSV.FEP_Setup(400)
